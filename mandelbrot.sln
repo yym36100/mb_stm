@@ -5,6 +5,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mandelbrot", "mandelbrot\ma
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fixedpointtest", "fixedpointtest\fixedpointtest.vcproj", "{DECFD82E-6653-4199-BEE8-C8A64E479990}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jpegtest", "jpegtest\jpegtest.vcproj", "{8F23EE87-E9AF-4D96-BD5E-FDF4A995C7FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -19,6 +21,10 @@ Global
 		{DECFD82E-6653-4199-BEE8-C8A64E479990}.Debug|Win32.Build.0 = Debug|Win32
 		{DECFD82E-6653-4199-BEE8-C8A64E479990}.Release|Win32.ActiveCfg = Release|Win32
 		{DECFD82E-6653-4199-BEE8-C8A64E479990}.Release|Win32.Build.0 = Release|Win32
+		{8F23EE87-E9AF-4D96-BD5E-FDF4A995C7FA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8F23EE87-E9AF-4D96-BD5E-FDF4A995C7FA}.Debug|Win32.Build.0 = Debug|Win32
+		{8F23EE87-E9AF-4D96-BD5E-FDF4A995C7FA}.Release|Win32.ActiveCfg = Release|Win32
+		{8F23EE87-E9AF-4D96-BD5E-FDF4A995C7FA}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

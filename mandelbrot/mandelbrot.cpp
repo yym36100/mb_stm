@@ -328,19 +328,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam){
 }
 
 #define limit 100.0
-inline u16 checkpoint(float cx, float cy)
+inline u16 checkpoint(cfixp cx, cfixp cy)
 {
 	u8 res = 0;
 	u16 i = 0;
 	//float x=cx,y=cy,xx,yy,xy;
-	cfixp x(cx),y(cy),xx,yy,xy, ccx(cx), ccy(cy);
+	cfixp x,y,xx,yy,xy;
 	cfixp v4(4.0), v2(2.0);
+	x = cx;
+	y = cy;
 	do{
 		xx= x*x;
 		yy = y*y;
 		xy = x*y;
-		x = xx-yy+ccx;
-		y = v2*xy+ccy;
+		x = xx-yy+cx;
+		y = v2*xy+cy;
 		i++;
 	}while((xx+yy)<v4 && i<limit);
 	return i;
@@ -359,15 +361,17 @@ void drawset2(db sx,db ex, db sy, db ey)
 	dx = (ex-sx)/width;
 	dy = (ey-sy)/height;
 
-	cy = sy;
+	cfixp fdx(dx),fdy(dy),fcy(sy),fcx(sx),fsx(sx);
+
+	//cy = sy;
 	for(u16 y=0;y<height;y++)
 	{	
-		cy+=dy;
-		cx = sx;		
+		fcy=fcy+ fdy;
+		fcx = fsx;		
 		for(u16 x=0;x<width;x++)
 		{						
-			cx+=dx;
-			val = checkpoint(cx,cy);			
+			fcx=fcx+fdx;
+			val = checkpoint(fcx,fcy);			
 			cc = val+co;
 
 			//c = 0xff + (cc<<8)+(cc<<16)+(cc<<24);
