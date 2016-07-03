@@ -19,8 +19,8 @@ typedef unsigned long u32;
 typedef float db;
 
 #define MAX_LOADSTRING 100
-#define width (640.0)
-#define height (480.0)
+#define width (320.0)
+#define height (240.0)
 
 void drawset2(db sx,db ex, db sy, db ey);
 float sx,ex, sy,ey;
@@ -48,6 +48,70 @@ void setpixel(u16 x, u16 y,u32 color);
 
 volatile int tgo[5];
 HWND gWnd;
+
+class cfixp{
+public:
+	unsigned char q;
+	signed long val;
+public:
+	cfixp& operator+(cfixp& v) {
+		cfixp t;
+		
+		t.val = val+v.val;
+		return t;
+	}
+	//friend cfixp operator+(cfixp lhs,        // passing lhs by value helps optimize chained a+b+c
+ //                    const cfixp& rhs) // otherwise, both parameters may be const references
+ // {
+ //   lhs.val += rhs.val; // reuse compound assignment
+ //   return lhs; // return the result by value (uses move constructor)
+ // }
+
+	cfixp& operator-(cfixp& v) {
+		cfixp t;
+		
+		t.val = val-v.val;
+		return t;
+	}
+
+	cfixp& operator*(cfixp& v) {	
+		cfixp t;
+		signed long long tmp;
+		tmp = (val*(signed long long)v.val);// + (1 << (q - 1));
+		tmp >>= q;			
+
+		
+		t.val = tmp;		
+		return t;
+	}	
+
+	cfixp& operator/(cfixp& v){
+		cfixp t;	
+		signed long long tmp;
+		tmp = ((signed long long)val)<<q;
+		
+		t.val = tmp/v.val;
+		return t;
+	}
+	friend bool operator<(const cfixp& l, const cfixp& r)
+    {
+        return l.val<r.val;
+    }
+
+	void setval(float a) {
+		val = a * (1<<q);
+	}
+
+	float getval(void) {
+		return val/(float)(1<<q);
+	}
+	void print(void) {
+		printf("%f\n",getval());
+	}
+	cfixp(float v=0,char qq=22):q(qq){
+		setval(v);
+	}
+};
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
 					   HINSTANCE hPrevInstance,
@@ -263,20 +327,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam){
 	return 0;
 }
 
-#define limit 250.0
+#define limit 100.0
 inline u16 checkpoint(float cx, float cy)
 {
 	u8 res = 0;
 	u16 i = 0;
-	float x=cx,y=cy,xx,yy,xy;
+	//float x=cx,y=cy,xx,yy,xy;
+	cfixp x(cx),y(cy),xx,yy,xy, ccx(cx), ccy(cy);
+	cfixp v4(4.0), v2(2.0);
 	do{
 		xx= x*x;
 		yy = y*y;
 		xy = x*y;
-		x = xx-yy+cx;
-		y = 2*xy+cy;
+		x = xx-yy+ccx;
+		y = v2*xy+ccy;
 		i++;
-	}while((xx+yy)<4.0 && i<limit);
+	}while((xx+yy)<v4 && i<limit);
 	return i;
 }
 
