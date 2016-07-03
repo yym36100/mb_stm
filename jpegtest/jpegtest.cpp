@@ -1,8 +1,12 @@
 // jpegtest.cpp : Defines the entry point for the application.
 //
 
+
 #include "stdafx.h"
+#include <stdio.h>
 #include "jpegtest.h"
+
+#include "jpeglib.h"
 
 #define MAX_LOADSTRING 100
 
@@ -18,14 +22,59 @@ LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
-                     HINSTANCE hPrevInstance,
-                     LPTSTR    lpCmdLine,
-                     int       nCmdShow)
+					   HINSTANCE hPrevInstance,
+					   LPTSTR    lpCmdLine,
+					   int       nCmdShow)
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
- 	// TODO: Place code here.
+	// TODO: Place code here.
+	{
+		struct jpeg_decompress_struct cinfo;
+		struct jpeg_error_mgr jerr;
+		unsigned char *inbuffer;
+		unsigned long insize;
+
+		FILE *f;
+
+		f=fopen("o:/image.jpg","rb");
+		fseek(f,0,SEEK_END);
+		insize = ftell(f);
+		fseek(f,0,SEEK_SET);
+		inbuffer = (unsigned char*)malloc(insize);
+		fread(inbuffer,insize,1,f);
+		fclose(f);
+
+		JSAMPARRAY buffer;		/* Output row buffer */
+		int row_stride;		/* physical row width in output buffer */
+
+		cinfo.err = jpeg_std_error(&jerr);
+		jpeg_create_decompress(&cinfo);
+		jpeg_mem_src(&cinfo,inbuffer, insize);
+
+		jpeg_read_header(&cinfo, TRUE);
+		jpeg_start_decompress(&cinfo);
+
+		/* JSAMPLEs per row in output buffer */
+		row_stride = cinfo.output_width * cinfo.output_components;
+		/* Make a one-row-high sample array that will go away when done with image */
+		buffer = (*cinfo.mem->alloc_sarray)((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
+
+		f = fopen("o:/out.raw","wb");
+		while (cinfo.output_scanline < cinfo.output_height) {
+
+			(void) jpeg_read_scanlines(&cinfo, buffer, 1);
+			/* Assume put_scanline_someplace wants a pointer and sample count. */
+			//put_scanline_someplace(buffer[0], row_stride);
+			fwrite(buffer[0],row_stride,1,f);
+		}
+		fclose(f);
+		(void) jpeg_finish_decompress(&cinfo);
+		jpeg_destroy_decompress(&cinfo);
+
+
+	}
 	MSG msg;
 	HACCEL hAccelTable;
 
@@ -103,22 +152,22 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-   HWND hWnd;
+	HWND hWnd;
 
-   hInst = hInstance; // Store instance handle in our global variable
+	hInst = hInstance; // Store instance handle in our global variable
 
-   hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+	hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
 
-   if (!hWnd)
-   {
-      return FALSE;
-   }
+	if (!hWnd)
+	{
+		return FALSE;
+	}
 
-   ShowWindow(hWnd, nCmdShow);
-   UpdateWindow(hWnd);
+	ShowWindow(hWnd, nCmdShow);
+	UpdateWindow(hWnd);
 
-   return TRUE;
+	return TRUE;
 }
 
 //

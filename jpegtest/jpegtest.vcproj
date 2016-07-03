@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="O:\visc\mb_stm\jpegtest\libjpeg\include"
+				AdditionalIncludeDirectories="O:\visc\mb_stm\jpegtest\libjpeg"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
